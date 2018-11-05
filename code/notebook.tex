@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{Project 1 File}
+    \title{The Perfect Marshmallow}
     
     
     
@@ -280,109 +280,444 @@
     
 
     
-    \hypertarget{what-would-todays-asian-american-population-be-if-japanese-americans-were-deported-rather-than-interned-in-1942}{%
-\section{What would today's Asian American population be if Japanese
-Americans were deported rather than interned in
-1942?}\label{what-would-todays-asian-american-population-be-if-japanese-americans-were-deported-rather-than-interned-in-1942}}
+    \hypertarget{modeling-the-perfectly-roasted-marshmallow}{%
+\section{Modeling the Perfectly Roasted
+Marshmallow}\label{modeling-the-perfectly-roasted-marshmallow}}
 
-Colin Takeda and Nathan Weil ModSim Project 1
+Leila Merzenich and Nathan Weil
+
+    \hypertarget{what-temperature-and-amount-of-time-will-create-the-perfectly-roasted-marshmallow}{%
+\subsubsection{What temperature and amount of time will create the
+perfectly roasted
+marshmallow?}\label{what-temperature-and-amount-of-time-will-create-the-perfectly-roasted-marshmallow}}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Configure Jupyter so figures appear in the notebook}
+{\color{incolor}In [{\color{incolor}1}]:} \PY{c+c1}{\PYZsh{} Configure Jupyter so figures appear in the notebook}
         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
         
         \PY{c+c1}{\PYZsh{} Configure Jupyter to display the assigned value after an assignment}
         \PY{o}{\PYZpc{}}\PY{k}{config} InteractiveShell.ast\PYZus{}node\PYZus{}interactivity=\PYZsq{}last\PYZus{}expr\PYZus{}or\PYZus{}assign\PYZsq{}
         
-        \PY{c+c1}{\PYZsh{} import functions from the modsim library}
+        \PY{c+c1}{\PYZsh{} Import functions from the modsim.py module}
         \PY{k+kn}{from} \PY{n+nn}{modsim} \PY{k}{import} \PY{o}{*}
         
-        \PY{c+c1}{\PYZsh{} import everything from SymPy.}
-        \PY{k+kn}{from} \PY{n+nn}{sympy} \PY{k}{import} \PY{o}{*}
-        
-        \PY{c+c1}{\PYZsh{} Set up Jupyter notebook to display math.}
-        \PY{n}{init\PYZus{}printing}\PY{p}{(}\PY{p}{)} 
-        
-        \PY{k+kn}{from} \PY{n+nn}{pandas} \PY{k}{import} \PY{n}{read\PYZus{}html}
-        
-        \PY{k+kn}{import} \PY{n+nn}{csv}
+        \PY{c+c1}{\PYZsh{} Import numpy}
+        \PY{k+kn}{import} \PY{n+nn}{numpy}
 \end{Verbatim}
 
 
-    \hypertarget{question}{%
-\subsection{Question}\label{question}}
+    To answer this question, we need to see at what temperature and time the
+core of the marshmallow is roasted thoroughly and the outside is crispy
+but not burnt. In order to understand the heat transfer process through
+the marshmallow from the outside air, we separated the marshmallow into
+three concentric sections with the same masses and varying thicknesses.
+This simplification is helpful because it is challenging to model the
+marshmallow as one large flow of energy, and does not over-simplify the
+heat transfer process.
 
-    What would today's Asian American population be if Japanese Americans
-were deported rather than interned in 1942?
+The energy held in each subsection is a stock, as well as the
+temperature that the amount of energy creates, because the temperatures
+and energies all affect each other and need to be calculated over time.
+The mass of each ring in the marshmallow is the same, and the thickness
+and surface area were calculated based on that. We used the conductivity
+of bread as a proxy for that of a marshmallow, which is a big assumption
+to make but is reasonable given that they are similar consistencies and
+we could not find the conductivity of a marshmallow, but found a
+reasonable range of possible values and that of bread fit within our
+range. We were able to find the specific heat of a marshmallow.
 
-What would be today's percent population of Asian Americans be if all
-other races increased naturally as well?
-
-    \hypertarget{model}{%
-\subsection{Model}\label{model}}
-
-    Inputs: - Asian American population in 1942 - total number of Japanese
-Americans interned - Populations of other races in 1942
-
-Data: - Populations of other races over time
-
-Actions: - Simulate change in population over time per race and plot
-
-Metrics: - Growth over time of each subset of population - Percent
-change for Asian Americans over time
+The initial temperature of our marshmallow is 50 degrees fahrenheit or
+283 Kelvin, an average temperature for a night camping. Using this we
+calculated the initial heat energy stored in each layer of the
+marshmallow below.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}This section is for Data input}
-        \PY{l+s+sd}{the idea is to take a .csv file from excel and import the data that way}
-        \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+{\color{incolor}In [{\color{incolor}2}]:} \PY{c+c1}{\PYZsh{} Sets external temperature for example}
+        \PY{n}{eTemp}\PY{o}{=}\PY{l+m+mi}{360}
         
-        \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data/racedemographics.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{newline}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{csvfile}\PY{p}{:}
-            \PY{n}{data} \PY{o}{=} \PY{n}{csv}\PY{o}{.}\PY{n}{reader}\PY{p}{(}\PY{n}{csvfile}\PY{p}{,} \PY{n}{delimiter}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{quotechar}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{|}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-            \PY{k}{for} \PY{n}{row} \PY{o+ow}{in} \PY{n}{data}\PY{p}{:}
-                \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{, }\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{row}\PY{p}{)}\PY{p}{)}
-        
-        \PY{n}{data\PYZus{}time} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{1940}\PY{p}{,} \PY{l+m+mi}{1950}\PY{p}{,} \PY{l+m+mi}{1960}\PY{p}{,} \PY{l+m+mi}{1970}\PY{p}{,} \PY{l+m+mi}{1980}\PY{p}{,} \PY{l+m+mi}{1990}\PY{p}{,} \PY{l+m+mi}{2000}\PY{p}{,} \PY{l+m+mi}{2010}\PY{p}{]}
-        
-        \PY{c+c1}{\PYZsh{} Population Data}
-        \PY{n}{api} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{254918}\PY{p}{,} \PY{l+m+mi}{321033}\PY{p}{,} \PY{l+m+mi}{980337}\PY{p}{,} \PY{l+m+mi}{1526401}\PY{p}{,} \PY{l+m+mi}{3500439}\PY{p}{,} \PY{l+m+mi}{7273662}\PY{p}{,} \PY{l+m+mi}{10641833}\PY{p}{,} \PY{l+m+mi}{15214265}\PY{p}{]}
-        \PY{n}{wh} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-        \PY{n}{bl} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-        \PY{n}{aiea} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-        \PY{n}{his} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-        \PY{n}{nhw} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+        \PY{c+c1}{\PYZsh{} Sets initial temperature and calculates initial energy}
+        \PY{n}{initial\PYZus{}temp} \PY{o}{=} \PY{l+m+mi}{283}
+        \PY{n}{initial\PYZus{}energy} \PY{o}{=} \PY{n}{initial\PYZus{}temp}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{2.33}\PY{o}{*}\PY{l+m+mf}{2.02}\PY{p}{)}
 \end{Verbatim}
 
 
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{k}{def} \PY{n+nf}{plot\PYZus{}results}\PY{p}{(}\PY{n}{api}\PY{p}{,} \PY{n}{data\PYZus{}time}\PY{p}{,} \PY{n}{title}\PY{p}{)}\PY{p}{:}
-        
-            \PY{n}{plot}\PY{p}{(}\PY{n}{api}\PY{p}{,} \PY{n}{data\PYZus{}time}\PY{p}{)}
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}2}]:} 1331.9678
+\end{Verbatim}
             
-            \PY{n}{decorate}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
-                     \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Population}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
-                     \PY{n}{title}\PY{o}{=}\PY{n}{title}\PY{p}{)}
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{k}{def} \PY{n+nf}{make\PYZus{}system}\PY{p}{(}\PY{n}{eTemp}\PY{p}{)}\PY{p}{:}
+            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Makes a system object including all parameters}
+        \PY{l+s+sd}{        }
+        \PY{l+s+sd}{    eTemp: cooking temperature outside of marshmallow}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    returns: System object}
+        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+           
+            \PY{c+c1}{\PYZsh{} Initializes state object}
+            \PY{n}{init} \PY{o}{=} \PY{n}{State}\PY{p}{(}\PY{n}{outer}\PY{o}{=}\PY{n}{initial\PYZus{}energy}\PY{p}{,} \PY{n}{middle}\PY{o}{=}\PY{n}{initial\PYZus{}energy}\PY{p}{,} \PY{n}{inner}\PY{o}{=}\PY{n}{initial\PYZus{}energy}\PY{p}{,} 
+                         \PY{n}{oTemp}\PY{o}{=}\PY{n}{initial\PYZus{}temp}\PY{p}{,} \PY{n}{mTemp}\PY{o}{=}\PY{n}{initial\PYZus{}temp}\PY{p}{,} \PY{n}{iTemp}\PY{o}{=}\PY{n}{initial\PYZus{}temp}\PY{p}{,} \PY{n}{o\PYZus{}proportion}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{i\PYZus{}proportion}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{} Size of the time steps}
+            \PY{n}{dt}\PY{o}{=}\PY{l+m+mi}{10} 
+            \PY{c+c1}{\PYZsh{} Thermal conductivity}
+            \PY{n}{conductivity}\PY{o}{=}\PY{l+m+mf}{0.1} 
+            \PY{c+c1}{\PYZsh{} Surface are of a marshmallow}
+            \PY{n}{areaOuter}\PY{o}{=}\PY{l+m+mf}{0.004054} 
+            \PY{c+c1}{\PYZsh{} Surface area of the middle section of the marshmallow}
+            \PY{n}{areaMiddle}\PY{o}{=}\PY{l+m+mf}{0.003091} 
+            \PY{c+c1}{\PYZsh{} Surface are of the inner section}
+            \PY{n}{areaInner}\PY{o}{=}\PY{l+m+mf}{0.001946} 
+            \PY{c+c1}{\PYZsh{} Thickness of the outer layer}
+            \PY{n}{thicknessOuter}\PY{o}{=}\PY{l+m+mf}{0.00161} 
+            \PY{c+c1}{\PYZsh{} Thickness of the middle layer}
+            \PY{n}{thicknessMiddle}\PY{o}{=}\PY{l+m+mf}{0.00229} 
+            \PY{c+c1}{\PYZsh{} Thickness of the inner core}
+            \PY{n}{thicknessInner}\PY{o}{=}\PY{l+m+mf}{0.0088} 
+            \PY{c+c1}{\PYZsh{} Each layer has the same mass}
+            \PY{n}{mass}\PY{o}{=}\PY{l+m+mf}{2.33}
+            \PY{c+c1}{\PYZsh{} Specific heat capacity of a marshmallow}
+            \PY{n}{specificMarshmallow}\PY{o}{=}\PY{l+m+mf}{2.02} 
+            \PY{c+c1}{\PYZsh{} Initial time}
+            \PY{n}{t0}\PY{o}{=}\PY{l+m+mi}{0}
+            \PY{c+c1}{\PYZsh{} Ending time in seconds}
+            \PY{n}{t\PYZus{}end}\PY{o}{=}\PY{l+m+mi}{1000} 
+            \PY{c+c1}{\PYZsh{} Starting sweep temperature}
+            \PY{n}{start\PYZus{}temp} \PY{o}{=} \PY{l+m+mi}{350}
+            \PY{c+c1}{\PYZsh{} Ending sweep Temperature}
+            \PY{n}{end\PYZus{}temp} \PY{o}{=} \PY{l+m+mi}{450}
+        
+            \PY{k}{return} \PY{n}{System}\PY{p}{(}\PY{n}{init}\PY{o}{=}\PY{n}{init}\PY{p}{,} \PY{n}{dt}\PY{o}{=}\PY{n}{dt}\PY{p}{,} \PY{n}{conductivity}\PY{o}{=}\PY{n}{conductivity}\PY{p}{,} 
+                          \PY{n}{areaOuter}\PY{o}{=}\PY{n}{areaOuter}\PY{p}{,} \PY{n}{areaMiddle}\PY{o}{=}\PY{n}{areaMiddle}\PY{p}{,} 
+                          \PY{n}{areaInner}\PY{o}{=}\PY{n}{areaInner}\PY{p}{,} \PY{n}{thicknessOuter}\PY{o}{=}\PY{n}{thicknessOuter}\PY{p}{,} 
+                          \PY{n}{thicknessMiddle}\PY{o}{=}\PY{n}{thicknessMiddle}\PY{p}{,} 
+                          \PY{n}{thicknessInner}\PY{o}{=}\PY{n}{thicknessInner}\PY{p}{,} \PY{n}{mass}\PY{o}{=}\PY{n}{mass}\PY{p}{,} 
+                          \PY{n}{specificMarshmallow}\PY{o}{=}\PY{n}{specificMarshmallow}\PY{p}{,} \PY{n}{t0}\PY{o}{=}\PY{n}{t0}\PY{p}{,} \PY{n}{t\PYZus{}end}\PY{o}{=}\PY{n}{t\PYZus{}end}\PY{p}{,}
+                          \PY{n}{start\PYZus{}temp}\PY{o}{=}\PY{n}{start\PYZus{}temp}\PY{p}{,} \PY{n}{end\PYZus{}temp}\PY{o}{=}\PY{n}{end\PYZus{}temp}\PY{p}{,} \PY{n}{eTemp}\PY{o}{=}\PY{n}{eTemp}\PY{p}{)}
+\end{Verbatim}
+
+
+    In order to calculate the heat transfered from the outside air to the
+marshmallow and from each section to the inner section, we used the
+following equations:
+
+dQ/dt=(kA(T2-T1))/d
+
+T=Q/mc
+
+Q=heat transfered
+
+k=thermal conductivity
+
+A=surface area
+
+T1=first temp
+
+T2=second temp
+
+d=thickness
+
+m=mass
+
+Cmarshmallow=specific heat
+
+At each step, we will add the energy transfered from the next outer
+section and subtract the energy transfered to the next inner section
+using the temperature from the previous time step. The temperature is
+recalculated at each step using the total energy during that timestep.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{k}{def} \PY{n+nf}{update\PYZus{}func}\PY{p}{(}\PY{n}{state}\PY{p}{,} \PY{n}{t}\PY{p}{,} \PY{n}{system}\PY{p}{)}\PY{p}{:}
+            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}calculates values and updates state for each time step }
+        \PY{l+s+sd}{     }
+        \PY{l+s+sd}{    state: State object}
+        \PY{l+s+sd}{    t: current time step}
+        \PY{l+s+sd}{    system: System object}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    returns: updated State object}
+        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+            \PY{c+c1}{\PYZsh{} Initalizes local state}
+            \PY{n}{outer}\PY{p}{,} \PY{n}{middle}\PY{p}{,} \PY{n}{inner}\PY{p}{,} \PY{n}{oTemp}\PY{p}{,} \PY{n}{mTemp}\PY{p}{,} \PY{n}{iTemp}\PY{p}{,} \PY{n}{o\PYZus{}proportion}\PY{p}{,} \PY{n}{i\PYZus{}proportion} \PY{o}{=} \PY{n}{state}
+            
+            \PY{c+c1}{\PYZsh{} Unpacks System object}
+            \PY{n}{unpack}\PY{p}{(}\PY{n}{system}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{} Energy transfered from outside air to outer layer}
+            \PY{n}{dQdt1} \PY{o}{=} \PY{p}{(}\PY{n}{conductivity}\PY{o}{*}\PY{n}{areaOuter}\PY{o}{*}\PY{p}{(}\PY{n}{eTemp}\PY{o}{\PYZhy{}}\PY{n}{oTemp}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{thicknessOuter} 
+            \PY{c+c1}{\PYZsh{} From outer to midle layer}
+            \PY{n}{dQdt2} \PY{o}{=} \PY{p}{(}\PY{n}{conductivity}\PY{o}{*}\PY{n}{areaMiddle}\PY{o}{*}\PY{p}{(}\PY{n}{oTemp}\PY{o}{\PYZhy{}}\PY{n}{mTemp}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{thicknessMiddle} 
+            \PY{c+c1}{\PYZsh{} Middle to inner layer}
+            \PY{n}{dQdt3} \PY{o}{=} \PY{p}{(}\PY{n}{conductivity}\PY{o}{*}\PY{n}{areaInner}\PY{o}{*}\PY{p}{(}\PY{n}{mTemp}\PY{o}{\PYZhy{}}\PY{n}{iTemp}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{thicknessInner} \PY{c+c1}{\PYZsh{}W/mK*m\PYZca{}2*K/m = W}
+            
+            \PY{c+c1}{\PYZsh{} Add energy transfered from air and subtract energy lost to middle layer}
+            \PY{n}{outer} \PY{o}{+}\PY{o}{=} \PY{p}{(}\PY{n}{dQdt1} \PY{o}{\PYZhy{}} \PY{n}{dQdt2}\PY{p}{)}\PY{o}{*}\PY{n}{dt} 
+            \PY{c+c1}{\PYZsh{} Add energy from outer and subtract energy to inner}
+            \PY{n}{middle} \PY{o}{+}\PY{o}{=} \PY{p}{(}\PY{n}{dQdt2} \PY{o}{\PYZhy{}} \PY{n}{dQdt3}\PY{p}{)}\PY{o}{*}\PY{n}{dt} 
+            \PY{c+c1}{\PYZsh{} Add energy from middle}
+            \PY{n}{inner} \PY{o}{+}\PY{o}{=} \PY{p}{(}\PY{n}{dQdt3}\PY{p}{)}\PY{o}{*}\PY{n}{dt} 
+            
+            \PY{c+c1}{\PYZsh{} Converts Energy to Temperature}
+            \PY{c+c1}{\PYZsh{} Energy/(kg*energy/(kg*K)) = K}
+            \PY{n}{iTemp} \PY{o}{=} \PY{n}{inner}\PY{o}{/}\PY{p}{(}\PY{n}{mass}\PY{o}{*}\PY{n}{specificMarshmallow}\PY{p}{)} 
+            \PY{n}{mTemp} \PY{o}{=} \PY{n}{middle}\PY{o}{/}\PY{p}{(}\PY{n}{mass}\PY{o}{*}\PY{n}{specificMarshmallow}\PY{p}{)}
+            \PY{n}{oTemp} \PY{o}{=} \PY{n}{outer}\PY{o}{/}\PY{p}{(}\PY{n}{mass}\PY{o}{*}\PY{n}{specificMarshmallow}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{} Calculates temperature as proportion of temperature range}
+            \PY{n}{o\PYZus{}proportion} \PY{o}{=} \PY{p}{(}\PY{n}{oTemp}\PY{o}{\PYZhy{}}\PY{n}{initial\PYZus{}temp}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{end\PYZus{}temp}\PY{o}{\PYZhy{}}\PY{n}{initial\PYZus{}temp}\PY{p}{)}
+            \PY{n}{i\PYZus{}proportion} \PY{o}{=} \PY{p}{(}\PY{n}{iTemp}\PY{o}{\PYZhy{}}\PY{n}{initial\PYZus{}temp}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{end\PYZus{}temp}\PY{o}{\PYZhy{}}\PY{n}{initial\PYZus{}temp}\PY{p}{)} 
+         
+            \PY{k}{return} \PY{n}{State}\PY{p}{(}\PY{n}{outer}\PY{o}{=}\PY{n}{outer}\PY{p}{,} \PY{n}{middle}\PY{o}{=}\PY{n}{middle}\PY{p}{,} \PY{n}{inner}\PY{o}{=}\PY{n}{inner}\PY{p}{,}
+                         \PY{n}{oTemp}\PY{o}{=}\PY{n}{oTemp}\PY{p}{,} \PY{n}{mTemp}\PY{o}{=}\PY{n}{mTemp}\PY{p}{,} \PY{n}{iTemp}\PY{o}{=}\PY{n}{iTemp}\PY{p}{,} \PY{n}{o\PYZus{}proportion}\PY{o}{=}\PY{n}{o\PYZus{}proportion}\PY{p}{,}
+                         \PY{n}{i\PYZus{}proportion}\PY{o}{=}\PY{n}{i\PYZus{}proportion}\PY{p}{)}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}Data imported and made into var to pass to plot\PYZsq{}\PYZsq{}\PYZsq{}}
-        \PY{n}{empty} \PY{o}{=} \PY{n}{TimeSeries}\PY{p}{(}\PY{p}{)}
-        \PY{n}{plot\PYZus{}results}\PY{p}{(}\PY{n}{api}\PY{p}{,} \PY{n}{data\PYZus{}time}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{World population estimates}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}5}]:} \PY{k}{def} \PY{n+nf}{run\PYZus{}simulation}\PY{p}{(}\PY{n}{system}\PY{p}{,} \PY{n}{update\PYZus{}func}\PY{p}{)}\PY{p}{:}
+            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Runs a simulation of the system.}
+        \PY{l+s+sd}{        }
+        \PY{l+s+sd}{    system: System object}
+        \PY{l+s+sd}{    update\PYZus{}func: function that updates state}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    returns: TimeFrame}
+        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+            \PY{c+c1}{\PYZsh{} Unpacks System object}
+            \PY{n}{unpack}\PY{p}{(}\PY{n}{system}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{} Initalizes time frame}
+            \PY{n}{frame} \PY{o}{=} \PY{n}{TimeFrame}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{n}{init}\PY{o}{.}\PY{n}{index}\PY{p}{)}
+            \PY{n}{frame}\PY{o}{.}\PY{n}{row}\PY{p}{[}\PY{n}{t0}\PY{p}{]} \PY{o}{=} \PY{n}{init}
+            
+            \PY{c+c1}{\PYZsh{} Runs update function for each time step}
+            \PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n}{linrange}\PY{p}{(}\PY{n}{t0}\PY{p}{,} \PY{n}{t\PYZus{}end}\PY{p}{,} \PY{n}{dt}\PY{p}{)}\PY{p}{:}
+                \PY{n}{frame}\PY{o}{.}\PY{n}{row}\PY{p}{[}\PY{n}{t}\PY{o}{+}\PY{n}{dt}\PY{p}{]} \PY{o}{=} \PY{n}{update\PYZus{}func}\PY{p}{(}\PY{n}{frame}\PY{o}{.}\PY{n}{row}\PY{p}{[}\PY{n}{t}\PY{p}{]}\PY{p}{,} \PY{n}{t}\PY{p}{,} \PY{n}{system}\PY{p}{)}
+            
+            \PY{k}{return} \PY{n}{frame}
 \end{Verbatim}
 
 
-    \hypertarget{results}{%
-\subsection{Results}\label{results}}
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{k}{def} \PY{n+nf}{plot\PYZus{}results}\PY{p}{(}\PY{n}{oTemp}\PY{p}{,} \PY{n}{mTemp}\PY{p}{,} \PY{n}{iTemp}\PY{p}{)}\PY{p}{:}
+            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Plots results from run\PYZus{}simulation}
+        \PY{l+s+sd}{        }
+        \PY{l+s+sd}{    oTemp: outer temperature of marshmallow}
+        \PY{l+s+sd}{    mTemp: middle temperature of marshmallow}
+        \PY{l+s+sd}{    iTemp: inner temperature of marshmallow}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    Displays: Plot of marshmallow section temperature over time}
+        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+            \PY{c+c1}{\PYZsh{} Plots each temperature curve}
+            \PY{n}{plot}\PY{p}{(}\PY{n}{oTemp}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Outer Temp}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{plot}\PY{p}{(}\PY{n}{mTemp}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Middle Temp}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{plot}\PY{p}{(}\PY{n}{iTemp}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Inner Temp}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{decorate}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time (seconds)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+                     \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tempurature(K)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+                     \PY{n}{title}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Temperatures of Marshmallow Zones vs Time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
 
-    We expect a much smaller Asian American percentage of the population
-over time if the interned Japanese Americans had ben deported. This data
-can be verified by projecting it to the 2010 census data.
 
-    \hypertarget{interpretation}{%
-\subsection{Interpretation}\label{interpretation}}
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{c+c1}{\PYZsh{} Makes system and runs simulation}
+        \PY{n}{system} \PY{o}{=} \PY{n}{make\PYZus{}system}\PY{p}{(}\PY{n}{eTemp}\PY{p}{)}
+        \PY{n}{results} \PY{o}{=} \PY{n}{run\PYZus{}simulation}\PY{p}{(}\PY{n}{system}\PY{p}{,} \PY{n}{update\PYZus{}func}\PY{p}{)}
+        
+        \PY{n}{plot\PYZus{}results}\PY{p}{(}\PY{n}{results}\PY{o}{.}\PY{n}{oTemp}\PY{p}{,} \PY{n}{results}\PY{o}{.}\PY{n}{mTemp}\PY{p}{,} \PY{n}{results}\PY{o}{.}\PY{n}{iTemp}\PY{p}{)}
+\end{Verbatim}
 
-    plot(results)
 
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_10_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    The graph above shows the temperatures of the three subsections of the
+marshmallow over time, with an external temperature of 360 Kelvin. The
+conduction of heat through the different layers of the marshmallow is
+evident by the differing slopes of the three subsections.
+
+    In order to show our model's results in a comprehensible manner, we
+created a heat map using a sweep of time and external temperature. We
+wanted to do this with the core temperature as well as the outer
+temperature to understand at what values of both the marshmallow would
+be perfect.
+
+Then, given that the internal temperature must be at least 336 Kelvin
+and the external temperature cannot exceed 358 Kelvin, we created a
+ideal heat zone confined by this upper limit of the outer section and
+this lower limit of the inner section of the marshmallow.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{k}{def} \PY{n+nf}{sweep\PYZus{}params}\PY{p}{(}\PY{n}{system}\PY{p}{)}\PY{p}{:}
+            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+        \PY{l+s+sd}{    Sweeps external temperature, running simulation each time}
+        \PY{l+s+sd}{    Saves data in arrays for ploting on heat map}
+        \PY{l+s+sd}{        }
+        \PY{l+s+sd}{    system: System object}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    returns: array of outer results, }
+        \PY{l+s+sd}{             array of inner results, }
+        \PY{l+s+sd}{             array of ideal zones}
+        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+            \PY{c+c1}{\PYZsh{} Initalizes external temperature sweep values}
+            \PY{n}{sweep\PYZus{}array} \PY{o}{=} \PY{n}{linrange}\PY{p}{(}\PY{l+m+mi}{355}\PY{p}{,} \PY{l+m+mi}{400}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{5}\PY{p}{)}
+        
+            \PY{c+c1}{\PYZsh{} Initializes arrays to return}
+            \PY{n}{o\PYZus{}results} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+            \PY{n}{i\PYZus{}results} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+            \PY{n}{zone} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+            
+            \PY{c+c1}{\PYZsh{} Sweeps external temperature values}
+            \PY{k}{for} \PY{n}{eTemp} \PY{o+ow}{in} \PY{n}{sweep\PYZus{}array}\PY{p}{:}
+        
+                \PY{c+c1}{\PYZsh{} Makes new system with external temperature from sweep}
+                \PY{n}{system} \PY{o}{=} \PY{n}{make\PYZus{}system}\PY{p}{(}\PY{n}{eTemp}\PY{p}{)}
+                
+                \PY{c+c1}{\PYZsh{} Runs simulation for new system}
+                \PY{n}{data} \PY{o}{=} \PY{n}{run\PYZus{}simulation}\PY{p}{(}\PY{n}{system}\PY{p}{,} \PY{n}{update\PYZus{}func}\PY{p}{)}
+                
+                \PY{c+c1}{\PYZsh{} Sets step arrays as calculated proportions from run\PYZus{}simulation}
+                \PY{c+c1}{\PYZsh{} Negative values to invert heat map colors}
+                \PY{n}{o\PYZus{}step} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{data}\PY{o}{.}\PY{n}{o\PYZus{}proportion}
+                \PY{n}{i\PYZus{}step} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{data}\PY{o}{.}\PY{n}{i\PYZus{}proportion}
+                
+                \PY{c+c1}{\PYZsh{} Initializes zone step array}
+                \PY{n}{zone\PYZus{}step} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+                        
+                \PY{c+c1}{\PYZsh{} Sweeps internal and outer temperatures to find perfect range}
+                \PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n}{linrange}\PY{p}{(}\PY{n}{t0}\PY{p}{,} \PY{n}{t\PYZus{}end}\PY{p}{,} \PY{n}{dt}\PY{p}{)}\PY{p}{:}
+                    \PY{k}{if} \PY{n}{data}\PY{o}{.}\PY{n}{iTemp}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{l+m+mi}{336} \PY{o+ow}{and} \PY{n}{data}\PY{o}{.}\PY{n}{oTemp}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{l+m+mi}{358}\PY{p}{:}
+                        \PY{n}{zone\PYZus{}num} \PY{o}{=} \PY{o}{.}\PY{l+m+mi}{4}
+                    \PY{k}{elif} \PY{n}{data}\PY{o}{.}\PY{n}{oTemp}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{l+m+mi}{358}\PY{p}{:}
+                        \PY{n}{zone\PYZus{}num} \PY{o}{=} \PY{l+m+mi}{0}
+                    \PY{k}{elif} \PY{n}{data}\PY{o}{.}\PY{n}{iTemp}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{l+m+mi}{336}\PY{p}{:}
+                        \PY{n}{zone\PYZus{}num} \PY{o}{=} \PY{l+m+mi}{1}
+                    \PY{k}{else}\PY{p}{:}
+                        \PY{n}{zone\PYZus{}num} \PY{o}{=} \PY{l+m+mf}{0.65}
+                        
+                    \PY{k}{if} \PY{l+m+mf}{335.5} \PY{o}{\PYZlt{}} \PY{n}{data}\PY{o}{.}\PY{n}{iTemp}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{l+m+mf}{336.5} \PY{o+ow}{and} \PY{l+m+mi}{357} \PY{o}{\PYZlt{}} \PY{n}{data}\PY{o}{.}\PY{n}{oTemp}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{l+m+mf}{358.5}\PY{p}{:}
+                        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ideal Time: }\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{t}\PY{p}{)}\PY{p}{)}
+                        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ideal External Temperature: }\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{eTemp}\PY{p}{)}\PY{p}{)}
+                    \PY{c+c1}{\PYZsh{} Adds result to zone\PYZus{}step array}
+                    \PY{n}{zone\PYZus{}step}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{zone\PYZus{}num}\PY{p}{)}
+                
+                \PY{c+c1}{\PYZsh{} Updates all main arrays}
+                \PY{n}{o\PYZus{}results}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{o\PYZus{}step}\PY{p}{)}
+                \PY{n}{i\PYZus{}results}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{i\PYZus{}step}\PY{p}{)}
+                \PY{n}{zone}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{zone\PYZus{}step}\PY{p}{)}
+                
+            \PY{k}{return} \PY{n}{o\PYZus{}results}\PY{p}{,} \PY{n}{i\PYZus{}results}\PY{p}{,} \PY{n}{zone}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{k}{def} \PY{n+nf}{map\PYZus{}values}\PY{p}{(}\PY{n}{results}\PY{p}{,} \PY{n}{title}\PY{p}{)}\PY{p}{:}
+            \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} Maps arrays on to heat maps}
+        \PY{l+s+sd}{        }
+        \PY{l+s+sd}{    results: single array of values from sweep\PYZus{}params}
+        \PY{l+s+sd}{    title: title of heat map}
+        \PY{l+s+sd}{    }
+        \PY{l+s+sd}{    Displays: heat map of data stored in results}
+        \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}    
+            \PY{c+c1}{\PYZsh{} Labels heat map}
+            \PY{n}{decorate}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time (deca\PYZhy{}seconds)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+                 \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Relative Tempurature}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+                 \PY{n}{title}\PY{o}{=}\PY{n}{title}\PY{p}{)}
+                     
+            \PY{c+c1}{\PYZsh{} Plots heat map}
+            \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{results}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hot}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{interpolation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nearest}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{o\PYZus{}results}\PY{p}{,} \PY{n}{i\PYZus{}results}\PY{p}{,} \PY{n}{zone} \PY{o}{=} \PY{n}{sweep\PYZus{}params}\PY{p}{(}\PY{n}{system}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Ideal Time: 390
+Ideal External Temperature: 359.5
+Ideal Time: 380
+Ideal External Temperature: 360.0
+Ideal Time: 380
+Ideal External Temperature: 360.5
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{map\PYZus{}values}\PY{p}{(}\PY{n}{o\PYZus{}results}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Outer Layer Heat Map}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{map\PYZus{}values}\PY{p}{(}\PY{n}{i\PYZus{}results}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Inner Layer Heat Map}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{map\PYZus{}values}\PY{p}{(}\PY{n}{zone}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ideal Zone Heat Map}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_16_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_16_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_16_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    In the graphs above, relative temperature as it appears on the y-axis is
+temperature in Kelvin from 355 to 400. Each number on the y-axis
+corresponds to an increase of half a Kelvin. Each number on the x-axis
+corresponds to ten seconds. Our lowest external temperature is 355
+because in order to have the outside of our marshmallow be perfectly
+crispy it needs to reach at minimum this temperature.
+
+The first graph maps the external temperature, with the lightest color
+being the initial temperature of the marshmallow at 283 Kelvin and the
+darkest being 450 Kelvin. The second graph maps the internal temperature
+on the same scale. The last graph has four sections, undercooked outside
+and inside (white), burnt outside and undercooked inside (red), burnt
+outside and well-cooked inside (black), and perfectly cooked outside and
+in (yellow).
+
+This graph shows that the easiest way to create the perfect marshmallow
+is to keep the marshmallow in a temperature within the range of 355-358
+for at least 400 seconds. However, in order to maximize time, the
+marshmallow should be roasted at 360 Kelvin for 380 seconds.
+
+    If we were to further prove our model, we should find a more substantial
+way to validate our findings through further experimentation. However,
+given the scope of this project, our assumptions and simplifications
+were reasonable enough that I feel confident in our findings. Another
+thing that would have improved our results is if we could calculate the
+conductivity of a marshmallow instead of relying on bread as a proxy. In
+creating this model, we spent extensive time iterating on what would be
+the best way to calculate the energy stored in various parts of the
+marshmallow, as well as what the various parameters should be until we
+reached reasonable results.
+
+    \hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
+
+We created a model to answer the question, ``What temperature and amount
+of time will create the perfectly roasted marshmallow?'' and found
+through a sweep of external temperature the following heat map of what
+temperature and time roasted will create a marshmallow that is crispy
+but not burnt and melted all the way through. To maximize time while
+creating the perfect marshmallow, a marshmallow should be roasted for
+380 seconds at 360 degrees Kelvin, or 188.33 degrees Fahrenheit.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{map\PYZus{}values}\PY{p}{(}\PY{n}{zone}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ideal Zone Heat Map}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_20_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
 
     % Add a bibliography block to the postdoc
     
